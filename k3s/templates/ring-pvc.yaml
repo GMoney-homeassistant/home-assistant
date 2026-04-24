@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: ring-data
-  namespace: homeassistant
+  namespace: home-assistant
 spec:
   accessModes:
     - ReadWriteOnce

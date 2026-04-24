@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: z2m-backup
-  namespace: homeassistant
+  namespace: home-assistant
 spec:
   schedule: "0 3 * * *"
   successfulJobsHistoryLimit: 1
