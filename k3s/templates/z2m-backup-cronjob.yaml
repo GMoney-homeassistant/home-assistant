@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: z2m-backup
+  namespace: homeassistant
+spec:
+  schedule: "0 3 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          nodeSelector:
+            kubernetes.io/hostname: raspberry-rua
+          restartPolicy: Never
+          initContainers:
+          - name: tar
+            image: busybox
+            command:
+            - sh
+            - -c
+            - tar czf /backup/z2m-backup-$(date +"%d-%m-%y").tar.gz -C /data .
+            volumeMounts:
+            - name: z2m-data
+              mountPath: /data
+              readOnly: true
+            - name: backup
+              mountPath: /backup
+          containers:
+          - name: upload
+            image: amazon/aws-cli
+            args:
+            - s3
+            - cp
+            - /backup/
+            - s3://jay-home-assistant-backups/z2m/
+            - --recursive
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws
+                  key: backup-user-aws-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws
+                  key: backup-user-aws-key-secret
+            - name: AWS_DEFAULT_REGION
+              value: us-east-1
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: z2m-data
+            persistentVolumeClaim:
+              claimName: z2m-data
+          - name: backup
+            emptyDir: {}
