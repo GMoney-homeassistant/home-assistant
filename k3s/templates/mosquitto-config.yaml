@@ -3,17 +3,14 @@ kind: ConfigMap
 metadata:
   name: mosquitto-config
   namespace: home-assistant
-data:
+data: #    password_file /mosquitto/password/password.txt
   mosquitto.conf: |
     persistence true
     persistence_location /mosquitto/data/
-
-    per_listener_settings true
 
     log_dest stdout
 
     listener 8883
     protocol mqtt
 
-    allow_anonymous true
-    password_file /mosquitto/password/password.txt
+    listener_allow_anonymous true

@@ -24,8 +24,10 @@ spec:
           name: config
         - mountPath: /mosquitto/data/
           name: data
-        - mountPath: /mosquitto/password/
+        - mountPath: /mosquitto/password/password.txt
           name: password
+          subPath: password.txt
+          readOnly: true
       volumes:
       - name: config
         configMap:
