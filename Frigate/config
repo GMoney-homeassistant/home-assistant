@@ -1,0 +1,38 @@
+mqtt:
+  enabled: false
+
+cameras:
+  kitchen_cam: # <------ Name the camera
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://tapocameraadmin:XXXXXXX@192.168.86.33/stream2 # <----- The stream you want to use for detection
+          roles:
+            - detect
+        - path: rtsp://tapocameraadmin:XXXXXXX@192.168.86.33/stream1 # <----- The stream you want to use for recording
+          roles:
+            - record
+    detect:
+      enabled: true  # <---- disable detection until you have a working camera feed
+      width: 640 # <---- update for your camera's resolution
+      height: 360 # <---- update for your camera's resolution
+      fps: 5
+objects:
+  track:
+    - person
+record:
+  enabled: true
+  retain:
+    days: 10
+    mode: motion
+  alerts:
+    retain:
+      days: 60
+  detections:
+    retain:
+      days: 60
+snapshots:
+  enabled: true
+timestamp_style:
+  format: '%d/%m/%Y %H:%M:%S'
+version: 0.15-1
